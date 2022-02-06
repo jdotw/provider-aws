@@ -20,6 +20,8 @@ env:
   DOCKER_USR: ${{ secrets.DOCKER_USR }}
   AWS_USR: ${{ secrets.AWS_USR }}
 
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+
 jobs:
   detect-noop:
     runs-on: ubuntu-18.04
