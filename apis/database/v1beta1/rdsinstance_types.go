@@ -156,13 +156,25 @@ type S3RestoreBackupConfiguration struct {
 	SourceEngineVersion *string `json:"sourceEngineVersion"`
 }
 
+// SnapshotRestoreBackupConfiguration defines the details of the database snapshot to restore from.
+type SnapshotRestoreBackupConfiguration struct {
+	// SnapshotIdentifier is the identifier of the database snapshot to restore.
+	SnapshotIdentifier *string `json:"snapshotIdentifier"`
+}
+
 // RestoreBackupConfiguration defines the backup to restore a new RDS instance from.
 type RestoreBackupConfiguration struct {
 	// S3 specifies the details of the S3 backup to restore from.
 	// +optional
 	S3 *S3RestoreBackupConfiguration `json:"s3,omitempty"`
 
-	// Source is the type of the backup to restore when creating a new RDS instance. Only S3 is supported at present.
+	// Snapshot specifies the details of the database snapshot to restore from.
+	// +optional
+	Snapshot *SnapshotRestoreBackupConfiguration `json:"snapshot,omitempty"`
+
+	// Source is the type of the backup to restore when creating a new RDS instance.
+	// Only S3 and Snapshot are supported at present.
+	// +kubebuilder:validation:Enum=S3;Snapshot
 	Source *string `json:"source"`
 }
 
@@ -510,6 +522,16 @@ type RDSInstanceParameters struct {
 	// +immutable
 	MasterPasswordSecretRef *xpv1.SecretKeySelector `json:"masterPasswordSecretRef,omitempty"`
 
+	// The upper limit to which Amazon RDS can automatically scale the storage of
+	// the DB instance.
+	//
+	// For more information about this setting, including limitations that apply
+	// to it, see Managing capacity automatically with Amazon RDS storage autoscaling
+	// (https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling)
+	// in the Amazon RDS User Guide.
+	// +optional
+	MaxAllocatedStorage *int `json:"maxAllocatedStorage,omitempty"`
+
 	// MonitoringInterval is the interval, in seconds, between points when Enhanced Monitoring metrics
 	// are collected for the DB instance. To disable collecting Enhanced Monitoring
 	// metrics, specify 0. The default is 0.
@@ -843,6 +865,8 @@ const (
 	RDSInstanceStateBackingUp = "backing-up"
 	// The instance is being backed up, but is available
 	RDSInstanceStateConfiguringEnhancedMonitoring = "configuring-enhanced-monitoring"
+	// After you modify the storage size for a DB instance, the status of the DB instance is storage-optimization.
+	RDSInstanceStateStorageOptimization = "storage-optimization"
 	// The instance has failed and Amazon RDS can't recover it. Perform a point-in-time restore to the latest restorable time of the instance to recover the data.
 	RDSInstanceStateFailed = "failed"
 )
@@ -1097,6 +1121,9 @@ type RDSInstanceObservation struct {
 	// is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB
 	// instance is accessed.
 	DBResourceID string `json:"dbResourceId,omitempty"`
+
+	// AllocatedStorage is the allocated storage size in gibibytes.
+	AllocatedStorage int `json:"allocatedStorage,omitempty"`
 
 	// DomainMemberships is the Active Directory Domain membership records associated with the DB instance.
 	DomainMemberships []DomainMembership `json:"domainMemberships,omitempty"`

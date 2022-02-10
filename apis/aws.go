@@ -42,6 +42,7 @@ import (
 	eksmanualv1alpha1 "github.com/crossplane/provider-aws/apis/eks/manualv1alpha1"
 	eksv1alpha1 "github.com/crossplane/provider-aws/apis/eks/v1alpha1"
 	eksv1beta1 "github.com/crossplane/provider-aws/apis/eks/v1beta1"
+	elasticachev1alpha1 "github.com/crossplane/provider-aws/apis/elasticache/v1alpha1"
 	elasticloadbalancingv1alpha1 "github.com/crossplane/provider-aws/apis/elasticloadbalancing/v1alpha1"
 	elbv2v1alpha1 "github.com/crossplane/provider-aws/apis/elbv2/v1alpha1"
 	gluev1alpha1 "github.com/crossplane/provider-aws/apis/glue/v1alpha1"
@@ -52,7 +53,8 @@ import (
 	kmsv1alpha1 "github.com/crossplane/provider-aws/apis/kms/v1alpha1"
 	lambdav1alpha1 "github.com/crossplane/provider-aws/apis/lambda/v1alpha1"
 	mqv1alpha1 "github.com/crossplane/provider-aws/apis/mq/v1alpha1"
-	notificationv1alpha3 "github.com/crossplane/provider-aws/apis/notification/v1alpha1"
+	neptunev1alpha1 "github.com/crossplane/provider-aws/apis/neptune/v1alpha1"
+	notificationv1alpha1 "github.com/crossplane/provider-aws/apis/notification/v1alpha1"
 	ramv1alpha1 "github.com/crossplane/provider-aws/apis/ram/v1alpha1"
 	rdsv1alpha1 "github.com/crossplane/provider-aws/apis/rds/v1alpha1"
 	redshiftv1alpha1 "github.com/crossplane/provider-aws/apis/redshift/v1alpha1"
@@ -64,6 +66,7 @@ import (
 	secretsmanagerv1alpha1 "github.com/crossplane/provider-aws/apis/secretsmanager/v1alpha1"
 	servicediscoveryv1alpha1 "github.com/crossplane/provider-aws/apis/servicediscovery/v1alpha1"
 	sfnv1alpha1 "github.com/crossplane/provider-aws/apis/sfn/v1alpha1"
+	snsv1beta1 "github.com/crossplane/provider-aws/apis/sns/v1beta1"
 	sqsv1beta1 "github.com/crossplane/provider-aws/apis/sqs/v1beta1"
 	transferv1alpha1 "github.com/crossplane/provider-aws/apis/transfer/v1alpha1"
 	awsv1alpha3 "github.com/crossplane/provider-aws/apis/v1alpha3"
@@ -79,9 +82,10 @@ func init() {
 		docdbv1alpha1.AddToScheme,
 		elasticloadbalancingv1alpha1.SchemeBuilder.AddToScheme,
 		iamv1beta1.SchemeBuilder.AddToScheme,
+		elasticachev1alpha1.SchemeBuilder.AddToScheme,
 		elbv2v1alpha1.SchemeBuilder.AddToScheme,
 		route53v1alpha1.SchemeBuilder.AddToScheme,
-		notificationv1alpha3.SchemeBuilder.AddToScheme,
+		notificationv1alpha1.SchemeBuilder.AddToScheme,
 		ec2v1beta1.SchemeBuilder.AddToScheme,
 		awsv1alpha3.SchemeBuilder.AddToScheme,
 		awsv1beta1.SchemeBuilder.AddToScheme,
@@ -121,6 +125,8 @@ func init() {
 		athenav1alpha1.SchemeBuilder.AddToScheme,
 		ramv1alpha1.SchemeBuilder.AddToScheme,
 		kinesisv1alpha1.SchemeBuilder.AddToScheme,
+		neptunev1alpha1.SchemeBuilder.AddToScheme,
+		snsv1beta1.SchemeBuilder.AddToScheme,
 	)
 }
 

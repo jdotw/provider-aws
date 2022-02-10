@@ -86,6 +86,7 @@ import (
 	"github.com/crossplane/provider-aws/pkg/controller/eks/fargateprofile"
 	"github.com/crossplane/provider-aws/pkg/controller/eks/identityproviderconfig"
 	"github.com/crossplane/provider-aws/pkg/controller/eks/nodegroup"
+	"github.com/crossplane/provider-aws/pkg/controller/elasticache/cacheparametergroup"
 	"github.com/crossplane/provider-aws/pkg/controller/elasticloadbalancing/elb"
 	"github.com/crossplane/provider-aws/pkg/controller/elasticloadbalancing/elbattachment"
 	"github.com/crossplane/provider-aws/pkg/controller/elbv2/listener"
@@ -117,8 +118,9 @@ import (
 	"github.com/crossplane/provider-aws/pkg/controller/lambda/function"
 	mqbroker "github.com/crossplane/provider-aws/pkg/controller/mq/broker"
 	mquser "github.com/crossplane/provider-aws/pkg/controller/mq/user"
-	"github.com/crossplane/provider-aws/pkg/controller/notification/snssubscription"
-	"github.com/crossplane/provider-aws/pkg/controller/notification/snstopic"
+	neptunecluster "github.com/crossplane/provider-aws/pkg/controller/neptune/dbcluster"
+	notsubscription "github.com/crossplane/provider-aws/pkg/controller/notification/snssubscription"
+	nottopic "github.com/crossplane/provider-aws/pkg/controller/notification/snstopic"
 	resourceshare "github.com/crossplane/provider-aws/pkg/controller/ram/resourceshare"
 	"github.com/crossplane/provider-aws/pkg/controller/rds/dbcluster"
 	"github.com/crossplane/provider-aws/pkg/controller/rds/dbclusterparametergroup"
@@ -139,6 +141,8 @@ import (
 	"github.com/crossplane/provider-aws/pkg/controller/servicediscovery/publicdnsnamespace"
 	"github.com/crossplane/provider-aws/pkg/controller/sfn/activity"
 	"github.com/crossplane/provider-aws/pkg/controller/sfn/statemachine"
+	"github.com/crossplane/provider-aws/pkg/controller/sns/subscription"
+	"github.com/crossplane/provider-aws/pkg/controller/sns/topic"
 	"github.com/crossplane/provider-aws/pkg/controller/sqs/queue"
 	transferserver "github.com/crossplane/provider-aws/pkg/controller/transfer/server"
 	transferuser "github.com/crossplane/provider-aws/pkg/controller/transfer/user"
@@ -150,6 +154,7 @@ func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter, poll ti
 	for _, setup := range []func(ctrl.Manager, logging.Logger, workqueue.RateLimiter, time.Duration) error{
 		cache.SetupReplicationGroup,
 		cachesubnetgroup.SetupCacheSubnetGroup,
+		cacheparametergroup.SetupCacheParameterGroup,
 		cluster.SetupCacheCluster,
 		database.SetupRDSInstance,
 		docdbinstance.SetupDBInstance,
@@ -188,8 +193,8 @@ func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter, poll ti
 		resourcerecordset.SetupResourceRecordSet,
 		hostedzone.SetupHostedZone,
 		secret.SetupSecret,
-		snstopic.SetupSNSTopic,
-		snssubscription.SetupSubscription,
+		topic.SetupSNSTopic,
+		subscription.SetupSubscription,
 		queue.SetupQueue,
 		redshift.SetupCluster,
 		address.SetupAddress,
@@ -265,6 +270,11 @@ func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter, poll ti
 		vpcendpointserviceconfiguration.SetupVPCEndpointServiceConfiguration,
 		kinesisstream.SetupStream,
 		resolverruleassociation.SetupResolverRuleAssociation,
+		neptunecluster.SetupDBCluster,
+		topic.SetupSNSTopic,
+		subscription.SetupSubscription,
+		nottopic.SetupSNSTopic,
+		notsubscription.SetupSubscription,
 	} {
 		if err := setup(mgr, l, rl, poll); err != nil {
 			return err

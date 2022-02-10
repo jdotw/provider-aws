@@ -39,8 +39,8 @@ import (
 
 	"github.com/crossplane/provider-aws/apis/notification/v1alpha1"
 	awsclient "github.com/crossplane/provider-aws/pkg/clients"
+	notclient "github.com/crossplane/provider-aws/pkg/clients/notification"
 	"github.com/crossplane/provider-aws/pkg/clients/sns"
-	snsclient "github.com/crossplane/provider-aws/pkg/clients/sns"
 )
 
 const (
@@ -90,7 +90,7 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 }
 
 type external struct {
-	client snsclient.TopicClient
+	client notclient.TopicClient
 	kube   client.Client
 }
 
@@ -114,16 +114,16 @@ func (e *external) Observe(ctx context.Context, mgd resource.Managed) (managed.E
 	}
 
 	current := cr.Spec.ForProvider.DeepCopy()
-	snsclient.LateInitializeTopicAttr(&cr.Spec.ForProvider, res.Attributes)
+	notclient.LateInitializeTopicAttr(&cr.Spec.ForProvider, res.Attributes)
 
 	cr.SetConditions(xpv1.Available())
 
 	// GenerateObservation for SNS Topic
-	cr.Status.AtProvider = snsclient.GenerateTopicObservation(res.Attributes)
+	cr.Status.AtProvider = notclient.GenerateTopicObservation(res.Attributes)
 
 	return managed.ExternalObservation{
 		ResourceExists:          true,
-		ResourceUpToDate:        snsclient.IsSNSTopicUpToDate(cr.Spec.ForProvider, res.Attributes),
+		ResourceUpToDate:        notclient.IsSNSTopicUpToDate(cr.Spec.ForProvider, res.Attributes),
 		ResourceLateInitialized: !reflect.DeepEqual(current, &cr.Spec.ForProvider),
 	}, nil
 }
@@ -135,7 +135,7 @@ func (e *external) Create(ctx context.Context, mgd resource.Managed) (managed.Ex
 		return managed.ExternalCreation{}, errors.New(errUnexpectedObject)
 	}
 
-	resp, err := e.client.CreateTopic(ctx, snsclient.GenerateCreateTopicInput(&cr.Spec.ForProvider))
+	resp, err := e.client.CreateTopic(ctx, notclient.GenerateCreateTopicInput(&cr.Spec.ForProvider))
 	if err != nil {
 		return managed.ExternalCreation{}, awsclient.Wrap(err, errCreate)
 	}
@@ -159,7 +159,7 @@ func (e *external) Update(ctx context.Context, mgd resource.Managed) (managed.Ex
 	}
 
 	// Update Topic Attributes
-	attrs := snsclient.GetChangedAttributes(cr.Spec.ForProvider, resp.Attributes)
+	attrs := notclient.GetChangedAttributes(cr.Spec.ForProvider, resp.Attributes)
 	for k, v := range attrs {
 		_, err = e.client.SetTopicAttributes(ctx, &awssns.SetTopicAttributesInput{
 			AttributeName:  aws.String(k),
